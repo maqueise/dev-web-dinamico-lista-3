@@ -1,5 +1,5 @@
 import * as bootstrap from "bootstrap"
 
-import "../css/themes/pulse.css"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 export { bootstrap }
