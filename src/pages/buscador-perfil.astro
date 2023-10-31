@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-br" data-bs-theme="dark">
+<html lang="pt-br" data-bs-theme="light">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -42,6 +42,9 @@
                                         >Ex 01 - Cadastro de Clientes</a
                                     >
                                 </li>
+                                <li>
+                                    <a class="dropdown-item" href="/buscador-perfil">Ex 02 - Buscador de Perfil Github</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -53,12 +56,11 @@
                 <div class="col-4">
                     <h1 class="display-6 text-center">GitHub Finder</h1>
                     <div class="container">
-                        <!-- Início do Card do Formulário de Busca -->
                         <form class="card bg-body-secondary rounded">
                             <div class="row g-2 card-body">
                                 <div class="col-12 form-floating">
                                     <input
-                                        type="search"
+                                        type="text"
                                         class="form-control"
                                         id="nomeUsuario"
                                         name="nomeUsuario"
@@ -71,33 +73,20 @@
                                 <div class="col-12">
                                     <button
                                         class="btn btn-primary w-100"
-                                        type="button">Buscar</button
+                                        id="btnBuscar"
+                                        type="submit">Buscar</button
                                     >
                                 </div><!--col -->
                             </div><!--row -->
-                        </form><!-- fim do card do formulário de busca -->
+                        </form><!--card -->
                         <div class="row mt-2 g-2">
                             <div class="col">
-                                <!--Card para Exibição do Usuário -->
-                                <div class="card bg-body-secondary rounded">
-                                    <div class="card-body text-center">
-                                        <img
-                                            class="rounded-circle w-25 border border-3 border-primary"
-                                            src="https://avatars.githubusercontent.com/u/6271023?v=4"
-                                        />
-                                        <p class="fs-4">
-                                            Caio Maqueise Alécio Pinheiro
-                                        </p>
-                                        <p
-                                            class="fs-6 d-flex justify-content-center gap-1"
-                                        >
-                                            <i
-                                                class="bi bi-geo-alt-fill text-primary"
-                                            ></i><span>Naviraí MS</span>
-                                        </p>
-                                    </div>
-                                </div><!-- Fim do card de exibição do usuário-->
-                            </div>
+                                <div id="displayCard">
+
+                                </div>
+                                <!-- Inicio do Card de Usuário -->
+                               <!-- fim do card do usuário -->
+                            </div><!-- col -->
                         </div>
                     </div><!--container -->
                 </div><!--col -->
@@ -107,5 +96,46 @@
     <script src="../js/libs.js"></script>
     <script>
         //@ts-nocheck
+        const form = document.querySelector('form')
+        const inputNomeUsuario = form.nomeUsuario
+        const displayCard = document.querySelector('#displayCard')
+
+        async function localizarPerfil(nomeUsuario) {
+            let response = await fetch(`https://api.github.com/users/${nomeUsuario}`)
+            let usuario = await  response.json()
+            return usuario
+        }
+        async function carregarUsuario(){
+           let usuario = await localizarPerfil(inputNomeUsuario.value)
+
+           let cardUsuarioHtml = `
+           
+           <div class="card bg-body-secondary rounded">
+                                    <div class="card-body text-center">
+                                        <img
+                                            class="rounded-circle w-25 border border-3 border-primary"
+                                            src="${usuario.avatar_url}"
+                                        />
+                                        <p class="fs-4">
+                                           ${usuario.name}
+                                        </p>
+                                        <p
+                                            class="fs-6 d-flex justify-content-center gap-1"
+                                        >
+                                            <i
+                                                class="bi bi-geo-alt-fill text-primary"
+                                            ></i><span>${usuario.location}</span>
+                                        </p>
+                                    </div>
+                                </div>
+           `
+            displayCard.innerHTML = cardUsuarioHtml
+        }
+
+        form.addEventListener('submit',function(event){
+            event.preventDefault()// desabilita o evento padrão do Navegador
+            carregarUsuario()
+        })
+
     </script>
 </html>
