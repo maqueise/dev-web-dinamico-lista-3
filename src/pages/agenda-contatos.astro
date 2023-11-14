@@ -28,35 +28,58 @@ import BaseLayout from "../layouts/BaseLayout.astro"
                     </div><!--col -->
                 </div><!--row -->
             </form><!--card -->
-            <ul class="list-group" id="contatos">
-
-            </ul>
+            <div class="d-flex justify-content-center">
+                <div class="spinner-grow" role="status" id="carregamento">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+                <ul class="list-group" id="contatos"></ul>
+            
         </div>
     </section>
-
     <script>
         //@ts-nocheck
-        async function buscarContatos(){
+        const ulContatos = document.querySelector("#contatos")
+        const carregamento = document.querySelector('#carregamento')
+        carregamento.style.display = 'none'
+
+        async function buscarContatos() {
             const url = "https://randomuser.me/api/?results=15&nat=br"
-            
+            carregamento.style.display = 'block'
+            const reponse = await fetch(url)
+            const contatos = await reponse.json()
+            carregamento.style.display = 'none'
+            return contatos.results
         }
+        async function listarContatos() {
+            const contatos = await buscarContatos()
 
-        async function listarContatos(){
-             const contatos = []
-
-             const contatosHTML = contatos.map(function(contato){
-               // 1 - criar um elemento li
-               // 2 - atribuir as classes do bootstrap
-               // 3 - adicionar no innerHTML a estrutura interpolando os valores em uma
-               // template string
-               // 4- retornar o elemento li 
-
-             })
-             contatosHTML.forEach(function(contato){
+            const contatosHTML = contatos.map(function (contato) {
+                // 1 - criar um elemento li
+                let liContato = document.createElement("li")
+                // 2 - atribuir as classes do bootstrap
+                liContato.className = "list-group-item"
+                // 3 - adicionar no innerHTML a estrutura interpolando os valores em uma
+                liContato.innerHTML = `
+                    <div>
+                        <img class="rounded-circle" src=${contato.picture.medium} />
+                        <span> ${contato.name.first} ${contato.name.last} </span>
+                    </div>
+                    <div>
+                        <i class="bi bi-envelope"></i> ${contato.email}
+                        <i class="bi bi-telephone"></i> ${contato.phone}
+                    </div>
+                `
+                // 4- retornar o elemento li
+                return liContato
+            })
+            contatosHTML.forEach(function (liContato) {
                 // fazer o appendChild de cada contato na UL contatos
-             })
+                ulContatos.appendChild(liContato)
+            })
         }
 
         // chamar a função listarContatos()
+        listarContatos()
     </script>
 </BaseLayout>
